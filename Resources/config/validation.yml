@@ -9,7 +9,7 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary:
         weight:
             - Type:
                 type: integer
-        created:
+        createdAt:
             - DateTime: ~
 
 
@@ -22,7 +22,7 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term:
         weight:
             - Type:
                 type: integer
-        created:
+        createdAt:
             - DateTime: ~
 #        vocabulary:
 #            - Valid: ~
@@ -39,5 +39,5 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap:
             - NotBlank: ~
             - Type:
                 type: string
-        created:
+        createdAt:
             - DateTime: ~

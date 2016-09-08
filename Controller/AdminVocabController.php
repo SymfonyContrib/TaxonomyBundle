@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary;
+use SymfonyContrib\Bundle\TaxonomyBundle\Form\VocabularyForm;
 
 class AdminVocabController extends Controller
 {
@@ -38,7 +39,8 @@ class AdminVocabController extends Controller
     public function formAction(Request $request, $vocabName = null)
     {
         $taxonomy = $this->get('taxonomy');
-        $em = $this->getDoctrine()->getManager();
+        $em       = $this->getDoctrine()->getManager();
+        $listUri  = $this->generateUrl('taxonomy_admin_vocab_list');
 
         if ($vocabName) {
             $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
@@ -46,9 +48,7 @@ class AdminVocabController extends Controller
             $vocabulary = new Vocabulary();
         }
 
-        $form = $this->createForm('taxonomy_vocabulary_form', $vocabulary, [
-            'cancel_url' => $this->generateUrl('taxonomy_admin_vocab_list'),
-        ]);
+        $form = $this->createForm(VocabularyForm::class, $vocabulary);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -61,13 +61,11 @@ class AdminVocabController extends Controller
             return $this->redirect($this->generateUrl('taxonomy_admin_vocab_list'));
         }
 
-        return $this->render(
-            'TaxonomyBundle:Admin/Vocab:form.html.twig',
-            [
-                'vocabulary' => $vocabulary,
-                'form' => $form->createView(),
-            ]
-        );
+        return $this->render('TaxonomyBundle:Admin/Vocab:form.html.twig', [
+            'vocabulary' => $vocabulary,
+            'form'       => $form->createView(),
+            'cancel_url' => $listUri,
+        ]);
     }
 
     /**

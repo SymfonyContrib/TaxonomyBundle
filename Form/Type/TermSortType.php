@@ -6,8 +6,11 @@
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TermSortType extends AbstractType
 {
@@ -17,27 +20,27 @@ class TermSortType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id', 'hidden', [
+            ->add('id', HiddenType::class, [
                 'disabled' => true,
                 'label' => false,
                 'attr' => [
                     'class' => 'term-id',
                 ],
             ])
-            ->add('parent', 'taxonomy_term_entity', [
+            ->add('parent', TermEntityType::class, [
                 'vocabulary' => $options['vocabulary'],
             ])
-            ->add('path', 'text', [
+            ->add('path', TextType::class, [
                 'attr' => [
                     'class' => 'term-path'
                 ],
             ])
-            ->add('weight', 'integer', [
+            ->add('weight', IntegerType::class, [
                 'attr' => [
                     'class' => 'term-weight'
                 ],
             ])
-            ->add('level', 'integer', [
+            ->add('level', IntegerType::class, [
                 'attr' => [
                     'class' => 'term-level'
                 ],
@@ -48,19 +51,11 @@ class TermSortType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'SymfonyContrib\\Bundle\\TaxonomyBundle\\Entity\\Term',
             'vocabulary' => null,
         ]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'taxonomy_term_sort';
     }
 }

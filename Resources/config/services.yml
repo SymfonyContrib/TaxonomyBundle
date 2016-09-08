@@ -1,64 +1,46 @@
-parameters:
-    taxonomy.class: SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy
-    taxonomy.doctrine.event_subscriber.class: SymfonyContrib\Bundle\TaxonomyBundle\Doctrine\EventSubscriber
-    taxonomy.form.vocabulary.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\VocabularyForm
-    taxonomy.form.term.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\TermForm
-    taxonomy.form.type.taxonomy.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyType
-    taxonomy.form.type.taxonomy_text.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyTextType
-    taxonomy.form.type.taxonomy_choice.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyChoiceType
-    taxonomy.form.terms_sort.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\TermsSortForm
-    taxonomy.form.type.term_entity.class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TermEntityType
-
 services:
     taxonomy:
-        class: %taxonomy.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy
         arguments:
-            - @doctrine.orm.entity_manager
+            - "@doctrine.orm.entity_manager"
 
     taxonomy.doctrine.event_subscriber:
-        class: %taxonomy.doctrine.event_subscriber.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Doctrine\EventSubscriber
         tags:
             - name: doctrine.event_subscriber
 
     taxonomy.form.vocabulary:
-        class: %taxonomy.form.vocabulary.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\VocabularyForm
         tags:
             - name: form.type
-              alias: taxonomy_vocabulary_form
 
     taxonomy.form.term:
-        class: %taxonomy.form.term.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\TermForm
         tags:
             - name: form.type
-              alias: taxonomy_term_form
 
     taxonomy.form.type.taxonomy_text:
-        class: %taxonomy.form.type.taxonomy_text.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyTextType
         arguments:
-            - @taxonomy
+            - "@taxonomy"
         tags:
             - name: form.type
-              alias: taxonomy_text
 
     taxonomy.form.type.taxonomy_choice:
-        class: %taxonomy.form.type.taxonomy_choice.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyChoiceType
         arguments:
-            - @taxonomy
+            - "@taxonomy"
         tags:
             - name: form.type
-              alias: taxonomy_choice
 
     taxonomy.form.terms_sort:
-        class: %taxonomy.form.terms_sort.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\TermsSortForm
         tags:
             - name: form.type
-              alias: taxonomy_terms_sort_form
 
     taxonomy.form.type.term_entity:
-        class: %taxonomy.form.type.term_entity.class%
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TermEntityType
         arguments:
-            - @taxonomy
+            - "@taxonomy"
         tags:
             - name: form.type
-              alias: taxonomy_term_entity
-

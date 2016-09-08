@@ -44,11 +44,11 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary:
             type: integer
             options:
                 comment: Weight in relation to other vocabularies.
-        created:
+        createdAt:
             type: datetime
             options:
                 comment: Date and time of creation.
-        updated:
+        updatedAt:
             type: datetime
             nullable: true
             options:

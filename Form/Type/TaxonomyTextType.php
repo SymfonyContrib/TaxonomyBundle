@@ -7,7 +7,7 @@ namespace SymfonyContrib\Bundle\TaxonomyBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use SymfonyContrib\Bundle\TaxonomyBundle\Form\DataTransformer\TermsToCsvTransformer;
 use SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy;
 
@@ -35,17 +35,17 @@ class TaxonomyTextType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'vocabulary' => null,
-            'multiple' => true,
-            'delimiter' => ',',
-            'enclosure' => '"',
-            'compound' => false,
-            'attr' => [
+            'multiple'   => true,
+            'delimiter'  => ',',
+            'enclosure'  => '"',
+            'compound'   => false,
+            'attr'       => [
                 'class' => 'term-single-select',
-            ]
+            ],
        ]);
     }
 
@@ -55,13 +55,5 @@ class TaxonomyTextType extends AbstractType
     public function getParent()
     {
         return 'text';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'taxonomy_text';
     }
 }

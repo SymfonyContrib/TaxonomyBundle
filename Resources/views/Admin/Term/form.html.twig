@@ -8,6 +8,6 @@
     {{ form_row(form.desc) }}
     {{ form_row(form.parent) }}
     {{ form_widget(form.save) }}
-    {{ form_widget(form.cancel) }}
+    <a href="{{ cancel_url }}" class="cancel-btn">Cancel</a>
     {{ form_end(form) }}
 {% endblock %}

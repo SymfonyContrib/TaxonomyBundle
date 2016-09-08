@@ -91,11 +91,11 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term:
                 - treeLevel
             options:
                 comment: Nesting level.
-        created:
+        createdAt:
             type: datetime
             options:
                 comment: Date and time of creation.
-        updated:
+        updatedAt:
             type: datetime
             nullable: true
             options:

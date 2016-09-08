@@ -1,7 +1,7 @@
 {
     "name": "symfonycontrib/taxonomy-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 taxonomy management for content organization. (tags, categories, groups, types, etc.)",
+    "description": "Symfony taxonomy management for content organization. (tags, categories, groups, types, etc.)",
     "keywords": ["Symfony", "bundle", "taxonomy", "tags", "categories"],
     "homepage": "http://symfonycontrib.com/",
     "license": "MIT",
@@ -13,23 +13,21 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "symfony/symfony": "~2.3",
-        "doctrine/orm": "~2.4",
-        "doctrine/doctrine-bundle": "~1.2",
-        "symfonycontrib/confirm-bundle": "~1.1",
-        "symfonycontrib/link-button-bundle": "~1.0",
-        "components/tabledrag": "~0.5"
+        "symfony/symfony":                   "^3.0",
+        "doctrine/orm":                      "^2.5",
+        "doctrine/doctrine-bundle":          "^1.6",
+        "stof/doctrine-extensions-bundle":   "^1.2",
+        "symfonycontrib/confirm-bundle":     "^2.0",
+        "components/tabledrag":              "^0.5"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "SymfonyContrib\\Bundle\\TaxonomyBundle\\": ""
         }
     },
-    "target-dir": "SymfonyContrib/Bundle/TaxonomyBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     }
 }

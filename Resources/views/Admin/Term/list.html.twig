@@ -59,7 +59,7 @@
 
     {% if terms %}
         {{ form_widget(form.save) }}
-        {{ form_widget(form.reset) }}
+        <a href="{{ cancel_url }}" class="cancel-btn">Reset</a>
         {{ form_end(form) }}
     {% endif %}
 {% endblock %}

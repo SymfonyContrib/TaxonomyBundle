@@ -1,66 +1,46 @@
 <?php
-/**
- *
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Entity;
 
-use SymfonyContrib\Bundle\TaxonomyBundle\Model\Traits\ArraySetTrait;
-
+/**
+ * Taxonomy term map.
+ */
 class TermMap
 {
-    use ArraySetTrait;
-
-    /**
-     * @var string
-     */
+    /** @var  string */
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var  string */
     protected $termId;
 
-    /**
-     * @var string
-     */
+    /** @var  string */
     protected $owner;
 
-    /**
-     * @var string
-     */
+    /** @var  string */
     protected $ownerId;
 
-    /**
-     * @var \DateTime
-     */
-    protected $created;
+    /** @var  string */
+    protected $field;
 
-    /**
-     * @var Term
-     */
+    /** @var  \DateTime */
+    protected $createdAt;
+
+    /** @var  Term */
     protected $term;
 
-
-    /**
-     * @param array $data
-     */
-    public function __construct(array $data = null)
+    public function __construct()
     {
-        $this->created = new \DateTime();
-
-        if ($data !== null) {
-            $this->setByArray($data);
-        }
+        $this->createdAt = new \DateTime();
     }
 
     /**
-     * @param \DateTime $created
+     * @param \DateTime $createdAt
+     *
      * @return TermMap
      */
-    public function setCreated($created)
+    public function setCreatedAt($createdAt)
     {
-        $this->created = $created;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -68,13 +48,14 @@ class TermMap
     /**
      * @return \DateTime
      */
-    public function getCreated()
+    public function getCreatedAt()
     {
-        return $this->created;
+        return $this->createdAt;
     }
 
     /**
      * @param string $id
+     *
      * @return TermMap
      */
     public function setId($id)
@@ -94,6 +75,7 @@ class TermMap
 
     /**
      * @param string $owner
+     *
      * @return TermMap
      */
     public function setOwner($owner)
@@ -113,6 +95,7 @@ class TermMap
 
     /**
      * @param string $ownerId
+     *
      * @return TermMap
      */
     public function setOwnerId($ownerId)
@@ -132,6 +115,7 @@ class TermMap
 
     /**
      * @param string $termId
+     *
      * @return TermMap
      */
     public function setTermId($termId)
@@ -151,6 +135,7 @@ class TermMap
 
     /**
      * @param Term $term
+     *
      * @return TermMap
      */
     public function setTerm(Term $term)
@@ -167,5 +152,25 @@ class TermMap
     public function getTerm()
     {
         return $this->term;
+    }
+
+    /**
+     * @return string
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return TermMap
+     */
+    public function setField($field)
+    {
+        $this->field = $field;
+
+        return $this;
     }
 }

@@ -6,9 +6,12 @@
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
+use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy;
 
 class TaxonomyChoiceType extends AbstractType
@@ -26,25 +29,32 @@ class TaxonomyChoiceType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /*public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $terms = $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']);
-        $builder->add($options['vocabulary'], 'choice', [
-            'choice_list' => new ObjectChoiceList($terms, 'name', [], null, 'id'),
+        $terms = $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary'], $builder->getName());
+        dump($terms);
+        $builder->add($builder->getName(), ChoiceType::class, [
+            'choices'  => $terms,
             'expanded' => true,
             'multiple' => true,
-            'label' => false,
+            'label'    => false,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
+        $terms = function (Options $options) {
+            return array_values($this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary'], $options['field']));
+        };
+
         $resolver->setDefaults([
             'inherit_data' => true,
-            'vocabulary' => null,
+            'vocabulary'   => null,
+            'field'        => null,
+            'choices'      => $terms,
         ]);
     }
 
@@ -53,14 +63,6 @@ class TaxonomyChoiceType extends AbstractType
      */
     public function getParent()
     {
-        return 'form';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'taxonomy_choice';
+        return ChoiceType::class;
     }
 }

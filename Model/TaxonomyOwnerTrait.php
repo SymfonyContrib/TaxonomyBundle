@@ -1,14 +1,13 @@
 <?php
-/**
- * Default implementation of TaxonomyOwnerInterface.
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Model;
 
 use SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term;
-use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * Default implementation of TaxonomyOwnerInterface.
+ */
 trait TaxonomyOwnerTrait
 {
     /**
@@ -26,6 +25,7 @@ trait TaxonomyOwnerTrait
      */
     public function getTaxonomy()
     {
+        // @todo: This is super ugly. Set a proxy on entities via load event.
         global $kernel;
         return $this->taxonomy ?: $this->taxonomy = $kernel->getContainer()->get('taxonomy');
     }
@@ -60,10 +60,12 @@ trait TaxonomyOwnerTrait
     /**
      * Get all terms mapped to this content.
      *
-     * @param null|string $vocabName
+     * @param null|string $field
+     * @param bool        $single
+     *
      * @return array
      */
-    public function getTerms($vocabName = null)
+    public function getTerms($field = null, $single = false)
     {
         // Lazy load terms.
         if (empty($this->terms) && $this->getTaxonomyOwnerId()) {
@@ -71,8 +73,8 @@ trait TaxonomyOwnerTrait
             $this->terms = $taxonomy->getMappedTerms($this->getTaxonomyOwner(), $this->getTaxonomyOwnerId());
         }
 
-        if ($vocabName) {
-            return isset($this->terms[$vocabName]) ? $this->terms[$vocabName] : [];
+        if ($field) {
+            return isset($this->terms[$field]) ? $this->terms[$field] : ($single ? null : []);
         } else {
             return $this->terms ?: [];
         }
@@ -92,10 +94,12 @@ trait TaxonomyOwnerTrait
      * Add/Map a term to this content. Create term if it does not exist.
      *
      * @param string|Term $term
-     * @param string $vocabName
+     * @param string      $vocabName
+     * @param string      $field
+     *
      * @return Term
      */
-    public function addTerm($term, $vocabName)
+    public function addTerm($term, $vocabName, $field)
     {
         $taxonomy = $this->getTaxonomy();
         if (is_string($term)) {
@@ -103,7 +107,7 @@ trait TaxonomyOwnerTrait
         }
 
         if ($this->getTaxonomyOwnerId()) {
-            $taxonomy->mapTerm($term, $this);
+            $taxonomy->mapTerm($term, $this, $field);
         }
 
         if ($this->terms === null) {
@@ -121,15 +125,15 @@ trait TaxonomyOwnerTrait
      * @param string $vocabName
      * @param bool $replace
      */
-    public function addTerms(array $terms, $vocabName, $replace = false)
+    public function addTerms(array $terms, $vocabName, $field, $replace = false)
     {
         if ($replace && $this->getTaxonomyOwnerId()) {
-            $this->removeAllTerms($vocabName);
+            $this->removeAllTerms($field, $vocabName);
         }
 
         $result = [];
         foreach ($terms as $term) {
-            $result[] = $this->addTerm($term, $vocabName);
+            $result[] = $this->addTerm($term, $vocabName, $field);
         }
 
         $this->terms[$vocabName] = $result;
@@ -160,11 +164,14 @@ trait TaxonomyOwnerTrait
      * Remove all terms from this content.
      *
      * @param string|null $vocabName
+     * @param string|null $field
      */
-    public function removeAllTerms($vocabName = null)
+    public function removeAllTerms($vocabName = null, $field = null)
     {
         $taxonomy = $this->getTaxonomy();
-        if ($vocabName) {
+        if ($vocabName && $field) {
+            $taxonomy->unmapAllTerms($this, 'ownerId', $vocabName, $field);
+        } elseif ($vocabName) {
             $taxonomy->unmapAllTerms($this, 'ownerId', $vocabName);
         } else {
             $taxonomy->unmapAllTerms($this, 'ownerId');

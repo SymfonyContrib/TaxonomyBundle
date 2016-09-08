@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term;
+use SymfonyContrib\Bundle\TaxonomyBundle\Form\TermForm;
+use SymfonyContrib\Bundle\TaxonomyBundle\Form\TermsSortForm;
+use SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TermSortType;
 
 class AdminTermController extends Controller
 {
@@ -22,17 +25,16 @@ class AdminTermController extends Controller
      */
     public function listAction(Request $request, $vocabName)
     {
-        $em = $this->getDoctrine()->getManager();
-        $taxonomy = $this->get('taxonomy');
+        $em         = $this->getDoctrine()->getManager();
+        $taxonomy   = $this->get('taxonomy');
         $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
-        $terms = $taxonomy->getTermRepo()->getFlatTree($vocabulary);
+        $terms      = $taxonomy->getTermRepo()->getFlatTree($vocabulary);
 
         $uri = $request->getRequestUri();
         $options = [
             'vocabulary' => $vocabulary,
-            'cancel_url' => $uri,
         ];
-        $form = $this->createForm('taxonomy_terms_sort_form', ['terms' => $terms], $options);
+        $form = $this->createForm(TermsSortForm::class, ['terms' => $terms], $options);
 
         $form->handleRequest($request);
 
@@ -46,9 +48,10 @@ class AdminTermController extends Controller
         }
 
         return $this->render('TaxonomyBundle:Admin/Term:list.html.twig', [
-            'terms' => $terms,
+            'terms'      => $terms,
             'vocabulary' => $vocabulary,
-            'form' => $form->createView(),
+            'form'       => $form->createView(),
+            'cancel_url' => $uri,
         ]);
     }
 
@@ -62,9 +65,10 @@ class AdminTermController extends Controller
      */
     public function formAction(Request $request, $vocabName, $termId = null)
     {
-        $taxonomy = $this->get('taxonomy');
+        $taxonomy   = $this->get('taxonomy');
         $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
-        $em = $this->getDoctrine()->getManager();
+        $em         = $this->getDoctrine()->getManager();
+        $listUri    = $this->generateUrl('taxonomy_admin_term_list', ['vocabName' => $vocabName]);
 
         if ($termId) {
             $term = $taxonomy->getTermRepo()->find($termId);
@@ -73,7 +77,7 @@ class AdminTermController extends Controller
             $term->setVocabulary($vocabulary);
         }
 
-        $form = $this->createForm('taxonomy_term_form', $term, [
+        $form = $this->createForm(TermForm::class, $term, [
             'vocabulary' => $vocabulary,
         ]);
         $form->handleRequest($request);
@@ -85,12 +89,13 @@ class AdminTermController extends Controller
             $msg = ($termId ? 'Updated ' : 'Added ') . $term->getName();
             $this->get('session')->getFlashBag()->add('success', $msg);
 
-            return $this->redirect($this->generateUrl('taxonomy_admin_term_list', ['vocabName' => $vocabName]));
+            return $this->redirect($listUri);
         }
 
         return $this->render('TaxonomyBundle:Admin/Term:form.html.twig', [
-            'term' => $term,
-            'form' => $form->createView(),
+            'term'       => $term,
+            'form'       => $form->createView(),
+            'cancel_url' => $listUri,
         ]);
     }
 

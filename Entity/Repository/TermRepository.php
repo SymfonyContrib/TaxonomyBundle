@@ -43,7 +43,7 @@ class TermRepository extends MaterializedPathRepository
      * @param string $vocabName
      * @return QueryBuilder
      */
-    public function getTermTreeQb($vocabName)
+    public function getTermTreeQb($vocabName, $field = null)
     {
         $qb    = $this->getNodesHierarchyQueryBuilder(null, false, [], false);
         $alias = (string)$qb->getDQLPart('select')[0];
@@ -65,7 +65,7 @@ class TermRepository extends MaterializedPathRepository
      * @param bool $reset
      * @return array
      */
-    public function getTree($vocab = null, $reset = false)
+    public function getTree($vocab = null, $field = null, $reset = false)
     {
         static $tree;
 
@@ -79,7 +79,7 @@ class TermRepository extends MaterializedPathRepository
         }
 
         // Get all terms in this vocabulary.
-        $terms = $this->getTermTreeQb($vocabName)->getQuery()->getResult();
+        $terms = $this->getTermTreeQb($vocabName, $field)->getQuery()->getResult();
 
         // Create a map of terms and their weight value.
         // Weight is used as the tree array key to allow for easy sorting.
@@ -132,9 +132,9 @@ class TermRepository extends MaterializedPathRepository
      * @param string|Vocabulary $vocab
      * @return array
      */
-    public function getFlatTree($vocab)
+    public function getFlatTree($vocab, $field = null)
     {
-        $tree = $this->getTree($vocab);
+        $tree   = $this->getTree($vocab, $field);
         $result = [];
         $result = $this->flattenTree($tree, $result);
 

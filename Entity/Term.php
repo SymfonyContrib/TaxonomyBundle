@@ -1,18 +1,15 @@
 <?php
-/**
- *
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Entity;
 
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Collections\ArrayCollection;
-use SymfonyContrib\Bundle\TaxonomyBundle\Model\Traits\ArraySetTrait;
 
+/**
+ * Taxonomy term.
+ */
 class Term
 {
-    use ArraySetTrait;
-
     /**
      * @var string
      */
@@ -51,15 +48,15 @@ class Term
     /**
      * @var \DateTime
      */
-    protected $created;
+    protected $createdAt;
 
     /**
      * @var \DateTime
      */
-    protected $updated;
+    protected $updatedAt;
 
     /**
-     * @var \SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap
+     * @var TermMap
      */
     protected $map;
 
@@ -73,21 +70,13 @@ class Term
      */
     protected $children;
 
-
-    /**
-     * @param array $data
-     */
-    public function __construct(array $data = null)
+    public function __construct()
     {
-        $this->desc = '';
-        $this->weight = 0;
-        $this->level = 0;
-        $this->created = new \DateTime();
-        $this->children = new ArrayCollection();
-
-        if ($data !== null) {
-            $this->setByArray($data);
-        }
+        $this->desc      = '';
+        $this->weight    = 0;
+        $this->level     = 0;
+        $this->createdAt = new \DateTime();
+        $this->children  = new ArrayCollection();
     }
 
     public function __toString()
@@ -102,18 +91,19 @@ class Term
      */
     public function preUpdate(PreUpdateEventArgs $args)
     {
-        if (!$args->hasChangedField('updated')) {
-            $this->updated = new \DateTime();
+        if (!$args->hasChangedField('updatedAt')) {
+            $this->updatedAt = new \DateTime();
         }
     }
 
     /**
-     * @param \DateTime $created
-     * @return Term
+     * @param \DateTime $createdAt
+     *
+*@return Term
      */
-    public function setCreated($created)
+    public function setCreatedAt($createdAt)
     {
-        $this->created = $created;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -121,9 +111,9 @@ class Term
     /**
      * @return \DateTime
      */
-    public function getCreated()
+    public function getCreatedAt()
     {
-        return $this->created;
+        return $this->createdAt;
     }
 
     /**
@@ -184,12 +174,13 @@ class Term
     }
 
     /**
-     * @param \DateTime $updated
-     * @return Term
+     * @param \DateTime $updatedAt
+     *
+*@return Term
      */
-    public function setUpdated($updated)
+    public function setUpdatedAt($updatedAt)
     {
-        $this->updated = $updated;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -197,9 +188,9 @@ class Term
     /**
      * @return \DateTime
      */
-    public function getUpdated()
+    public function getUpdatedAt()
     {
-        return $this->updated;
+        return $this->updatedAt;
     }
 
     /**
@@ -345,5 +336,4 @@ class Term
     {
         return str_repeat($levelCharacter, $this->level) . ' ' . $this->getName();
     }
-
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Taxonomy manager service.
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle;
 
@@ -13,24 +10,25 @@ use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap;
 use SymfonyContrib\Bundle\TaxonomyBundle\Model\TaxonomyOwnerInterface;
 
+/**
+ * Taxonomy manager service.
+ */
 class Taxonomy
 {
-    /**
-     * @var EntityManager
-     */
+    /** @var EntityManager */
     protected $em;
 
-    /**
-     * @var VocabularyRepository
-     */
+    /** @var VocabularyRepository */
     protected $vocabRepo;
 
-    /**
-     * @var TermRepository
-     */
+    /** @var TermRepository */
     protected $termRepo;
 
-
+    /**
+     * Taxonomy constructor.
+     *
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
@@ -65,7 +63,7 @@ class Taxonomy
      */
     public function searchTerms($vocabName = null, $term = null)
     {
-        $qb = $this->em->createQueryBuilder('t');
+        $qb = $this->em->createQueryBuilder();
         $qb->select('partial t.{id, name}')
             ->from('TaxonomyBundle:Term', 't');
 
@@ -91,19 +89,18 @@ class Taxonomy
      *
      * @param string $name
      * @param string|Vocabulary $vocab
-     * @param array $data
      * @param bool $flush
      * @return Term
      */
-    public function createTerm($name, $vocab, array $data = [], $flush = true)
+    public function createTerm($name, $vocab, $flush = true)
     {
         if (is_string($vocab)) {
             $vocab = $this->getVocabRepo()->findOneBy(['name' => $vocab]);
         }
 
-        $data['name'] = $name;
-        $data['vocabulary'] = $vocab;
-        $term = new Term($data);
+        $term = new Term();
+        $term->setName($name)
+            ->setVocabulary($vocab);
 
         $this->em->persist($term);
         if ($flush) {
@@ -123,7 +120,7 @@ class Taxonomy
     {
         $entities = [];
         foreach ($terms as $data) {
-            $entities[] = $this->createTerm($data['name'], $data['vocabulary'], $data, false);
+            $entities[] = $this->createTerm($data['name'], $data['vocabulary'], false);
         }
 
         return $entities;
@@ -149,16 +146,19 @@ class Taxonomy
     /**
      * Map a term to content.
      *
-     * @param Term $term
+     * @param Term                   $term
      * @param TaxonomyOwnerInterface $owner
+     * @param string                 $field
+     *
      * @return TermMap
      */
-    public function mapTerm(Term $term, TaxonomyOwnerInterface $owner)
+    public function mapTerm(Term $term, TaxonomyOwnerInterface $owner, $field)
     {
         $termMap = new TermMap();
         $termMap->setTerm($term)
             ->setOwner($owner->getTaxonomyOwner())
-            ->setOwnerId($owner->getTaxonomyOwnerId());
+            ->setOwnerId($owner->getTaxonomyOwnerId())
+            ->setField($field);
         $this->em->persist($termMap);
         $this->em->flush();
 
@@ -167,8 +167,6 @@ class Taxonomy
 
     /**
      * Remove a map between term and content.
-     *
-     * @todo Make usable with converted ID types.
      *
      * @param Term $term
      * @param TaxonomyOwnerInterface $owner
@@ -181,8 +179,8 @@ class Taxonomy
                     AND tm.ownerId = :ownerId";
 
         $this->em->createQuery($dql)->execute([
-            'termId' => $term->getId(),
-            'owner' => $owner->getTaxonomyOwner(),
+            'termId'  => $term->getId(),
+            'owner'   => $owner->getTaxonomyOwner(),
             'ownerId' => $owner->getTaxonomyOwnerId(),
         ]);
     }
@@ -190,13 +188,11 @@ class Taxonomy
     /**
      * Remove all maps to an ownerId, an owner, or everything.
      *
-     * @todo Make usable with converted ID field types.
-     *
      * @param TaxonomyOwnerInterface $owner
      * @param string $for [ownerId, owner, truncate]
      * @param null|string $vocabName
      */
-    public function unmapAllTerms(TaxonomyOwnerInterface $owner, $for = 'ownerId', $vocabName = null)
+    public function unmapAllTerms(TaxonomyOwnerInterface $owner, $for = 'ownerId', $vocabName = null, $field = null)
     {
         // Do not unmap terms for new entities.
         if ($for === 'ownerId' && $owner->getTaxonomyOwnerId() === null) {
@@ -236,6 +232,21 @@ class Taxonomy
                 ];
                 break;
 
+            case 'field':
+                $sql .= " WHERE tm.owner = :owner
+                            AND tm.oid = :ownerId
+                            AND tm.field = :field";
+                $params = [
+                    'owner'   => $owner->getTaxonomyOwner(),
+                    'ownerId' => $owner->getTaxonomyOwnerId(),
+                    'field'   => $field,
+                ];
+                if ($vocabName) {
+                    $sql .= " AND v.name = :vocabName";
+                    $params['vocabName'] = $vocabName;
+                }
+                break;
+
             case 'truncate':
                 // USE WITH EXTREME CAUTION! DELETES ALL TERMMAP TABLE ROWS.
                 break;
@@ -249,8 +260,6 @@ class Taxonomy
     /**
      * Get all terms mapped to this owner or owner ID.
      *
-     * @todo Make usable with converted ID field types.
-     *
      * @param string $owner
      * @param mixed $ownerId
      * @return array
@@ -263,7 +272,7 @@ class Taxonomy
         }
 
         $qb = $this->em->createQueryBuilder();
-        $qb->select('t, v')
+        $qb->select('t, v', 'm')
             ->from('TaxonomyBundle:Term', 't')
             ->innerJoin('t.map', 'm')
             ->innerJoin('t.vocabulary', 'v')
@@ -271,14 +280,16 @@ class Taxonomy
             ->setParameter('owner', $owner);
 
         if ($ownerId) {
-            $qb->andWhere('m.ownerId = :ownerId')->setParameter('ownerId', $ownerId);
+            $qb->andWhere('m.ownerId = :ownerId')
+                ->setParameter('ownerId', $ownerId);
         }
 
         $results = $qb->getQuery()->getResult();
 
         $terms = [];
+        /** @var Term $term */
         foreach ($results as $term) {
-            $terms[$term->getVocabulary()->getName()][$term->getId()] = $term;
+            $terms[$term->getMap()->getField()][$term->getId()] = $term;
         }
 
         return $terms;
@@ -286,8 +297,6 @@ class Taxonomy
 
     /**
      * Get all content that is mapped to a term.
-     *
-     * @todo Make usable with converted ID field types.
      *
      * @param string $owner
      * @param string $vocabName

@@ -1,18 +1,15 @@
 <?php
-/**
- * Vocabulary Doctrine entity.
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Entity;
 
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Collections\ArrayCollection;
-use SymfonyContrib\Bundle\TaxonomyBundle\Model\Traits\ArraySetTrait;
 
+/**
+ * Taxonomy vocabulary.
+ */
 class Vocabulary
 {
-    use ArraySetTrait;
-
     /**
      * @var string
      */
@@ -46,12 +43,12 @@ class Vocabulary
     /**
      * @var \DateTime
      */
-    protected $created;
+    protected $createdAt;
 
     /**
      * @var \DateTime
      */
-    protected $updated;
+    protected $updatedAt;
 
 
     /**
@@ -59,13 +56,9 @@ class Vocabulary
      */
     public function __construct(array $data = null)
     {
-        $this->desc = '';
-        $this->weight = 0;
-        $this->created = new \DateTime();
-
-        if ($data !== null) {
-            $this->setByArray($data);
-        }
+        $this->desc      = '';
+        $this->weight    = 0;
+        $this->createdAt = new \DateTime();
     }
 
     /**
@@ -85,18 +78,19 @@ class Vocabulary
      */
     public function preUpdate(PreUpdateEventArgs $args)
     {
-        if (!$args->hasChangedField('updated')) {
-            $this->updated = new \DateTime();
+        if (!$args->hasChangedField('updatedAt')) {
+            $this->updatedAt = new \DateTime();
         }
     }
 
     /**
-     * @param \DateTime $created
-     * @return Vocabulary
+     * @param \DateTime $createdAt
+     *
+*@return Vocabulary
      */
-    public function setCreated(\DateTime $created)
+    public function setCreatedAt(\DateTime $createdAt)
     {
-        $this->created = $created;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -104,9 +98,9 @@ class Vocabulary
     /**
      * @return \DateTime
      */
-    public function getCreated()
+    public function getCreatedAt()
     {
-        return $this->created;
+        return $this->createdAt;
     }
 
     /**
@@ -219,12 +213,13 @@ class Vocabulary
     }
 
     /**
-     * @param \DateTime $updated
-     * @return Vocabulary
+     * @param \DateTime $updatedAt
+     *
+*@return Vocabulary
      */
-    public function setUpdated(\DateTime $updated = null)
+    public function setUpdatedAt(\DateTime $updatedAt = null)
     {
-        $this->updated = $updated;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -232,9 +227,9 @@ class Vocabulary
     /**
      * @return \DateTime
      */
-    public function getUpdated()
+    public function getUpdatedAt()
     {
-        return $this->updated;
+        return $this->updatedAt;
     }
 
     /**

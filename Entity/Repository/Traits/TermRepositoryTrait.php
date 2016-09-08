@@ -1,7 +1,4 @@
 <?php
-/**
- *
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Entity\Repository\Traits;
 
@@ -16,9 +13,9 @@ trait TermRepositoryTrait
             $vocab = $this->getVocabulary($vocab);
         }
 
-        $data['name'] = $name;
-        $data['vocabulary'] = $vocab;
-        $term = new Term($data);
+        $term = new Term();
+        $term->setName($name)
+             ->setVocabulary($vocab);
 
         $this->em->persist($term);
 

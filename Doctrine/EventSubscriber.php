@@ -10,8 +10,11 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use SymfonyContrib\Bundle\TaxonomyBundle\Model\TaxonomyOwnerInterface;
 
-class EventSubscriber implements EventSubscriberInterface {
-
+class EventSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @return array
+     */
     public function getSubscribedEvents()
     {
         return [
@@ -32,7 +35,7 @@ class EventSubscriber implements EventSubscriberInterface {
         // Ensure entity supports taxonomy.
         if ($entity instanceof TaxonomyOwnerInterface) {
             $taxonomy = $entity->getTaxonomy();
-            $terms = $entity->getTerms();
+            $terms    = $entity->getTerms();
             foreach ($terms as $vocab) {
                 foreach ($vocab as $term) {
                     $taxonomy->mapTerm($term, $entity);

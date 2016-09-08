@@ -5,10 +5,10 @@
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Form\Type;
 
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use SymfonyContrib\Bundle\TaxonomyBundle\Taxonomy;
 
 class TermEntityType extends AbstractType
@@ -26,20 +26,22 @@ class TermEntityType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
+        // Use a callable to get vocabulary argument through late processing.
         $choiceList = function (Options $options) {
-            $terms = $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']);
-            return new ObjectChoiceList($terms, 'hierarchyLabel', [], null, 'id');
+            dump($this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']));
+            return $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']);
         };
 
         $resolver->setDefaults([
-            'class' => 'TaxonomyBundle:Term',
-            'vocabulary' => null,
-            'choice_list' => $choiceList,
-            'required' => false,
-            'empty_value' => '[None]',
-            'attr' => [
+            'class'        => 'TaxonomyBundle:Term',
+            'vocabulary'   => null,
+            'choices'      => $choiceList,
+            'choice_label' => 'hierarchyLabel',
+            'required'     => false,
+            //'empty_value'  => '[None]',
+            'attr'         => [
                 'class' => 'term-parent-id'
             ],
         ]);
@@ -50,14 +52,6 @@ class TermEntityType extends AbstractType
      */
     public function getParent()
     {
-        return 'entity';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'taxonomy_term_entity';
+        return EntityType::class;
     }
 }

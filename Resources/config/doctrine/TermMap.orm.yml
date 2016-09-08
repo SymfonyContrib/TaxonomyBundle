@@ -23,6 +23,9 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap:
         taxonomy_term_map_oid:
             columns:
                 - oid
+        taxonomy_term_map_field:
+            columns:
+                - field
     id:
         id:
             type: integer
@@ -44,7 +47,12 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap:
             type: integer
             options:
                 comment: ID of the referencing object.
-        created:
+        field:
+            type: string
+            length: 255
+            options:
+                comment: Field/property of referencing object.
+        createdAt:
             type: datetime
             options:
                 comment: Date and time this mapping was created.
