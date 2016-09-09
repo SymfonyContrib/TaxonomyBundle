@@ -30,7 +30,6 @@ class TermEntityType extends AbstractType
     {
         // Use a callable to get vocabulary argument through late processing.
         $choiceList = function (Options $options) {
-            dump($this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']));
             return $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary']);
         };
 
