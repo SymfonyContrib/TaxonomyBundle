@@ -1,0 +1,9 @@
+SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary:
+    categories:
+        label: Categories
+        name: categories
+        desc: Managed organization labels.
+    tags:
+        label: Tags
+        name: tags
+        desc: Unmanaged organization labels.

@@ -205,7 +205,7 @@ class Term
     }
 
     /**
-     * @return \SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary
+     * @return Vocabulary
      */
     public function getVocabulary()
     {
