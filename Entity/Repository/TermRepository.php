@@ -43,7 +43,7 @@ class TermRepository extends MaterializedPathRepository
      * @param string $vocabName
      * @return QueryBuilder
      */
-    public function getTermTreeQb($vocabName, $field = null)
+    public function getTermTreeQb($vocabName)
     {
         $qb    = $this->getNodesHierarchyQueryBuilder(null, false, [], false);
         $alias = (string)$qb->getDQLPart('select')[0];
@@ -65,12 +65,12 @@ class TermRepository extends MaterializedPathRepository
      * @param bool $reset
      * @return array
      */
-    public function getTree($vocab = null, $field = null, $reset = false)
+    public function getTree($vocab = null, $reset = false)
     {
         static $tree;
 
-        if ($reset || !empty($tree)) {
-            return $tree;
+        if ($reset || !empty($tree[$vocab])) {
+            return $tree[$vocab];
         }
 
         $vocabName = $vocab;
@@ -79,7 +79,7 @@ class TermRepository extends MaterializedPathRepository
         }
 
         // Get all terms in this vocabulary.
-        $terms = $this->getTermTreeQb($vocabName, $field)->getQuery()->getResult();
+        $terms = $this->getTermTreeQb($vocabName)->getQuery()->getResult();
 
         // Create a map of terms and their weight value.
         // Weight is used as the tree array key to allow for easy sorting.
@@ -89,14 +89,14 @@ class TermRepository extends MaterializedPathRepository
         }
 
         // Create the multi-dimensional array.
-        $tree = [];
+        $vocabTree = [];
         foreach ($terms as $term) {
             // Get the terms parentage tree as an array.
             $pathParts = explode('/', $term->getPath());
             // Remove the term itself.
             $leaf = array_pop($pathParts);
             // The tree is built through referential values.
-            $branch = & $tree;
+            $branch = & $vocabTree;
             // Loop through the parentage tree and ensure array levels exist.
             foreach ($pathParts as $part) {
                 $branch = & $branch[$map[$part]]['children'];
@@ -119,11 +119,11 @@ class TermRepository extends MaterializedPathRepository
                 ksort($array, SORT_NUMERIC);
             }
         };
-        $sort($tree);
+        $sort($vocabTree);
 
-        $tree = array_values($tree);
+        $tree[$vocab] = array_values($vocabTree);
 
-        return $tree;
+        return $tree[$vocab];
     }
 
     /**
@@ -132,9 +132,9 @@ class TermRepository extends MaterializedPathRepository
      * @param string|Vocabulary $vocab
      * @return array
      */
-    public function getFlatTree($vocab, $field = null)
+    public function getFlatTree($vocab)
     {
-        $tree   = $this->getTree($vocab, $field);
+        $tree   = $this->getTree($vocab);
         $result = [];
         $result = $this->flattenTree($tree, $result);
 

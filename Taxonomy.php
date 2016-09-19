@@ -192,7 +192,7 @@ class Taxonomy
      * @param string $for [ownerId, owner, truncate]
      * @param null|string $vocabName
      */
-    public function unmapAllTerms(TaxonomyOwnerInterface $owner, $for = 'ownerId', $vocabName = null, $field = null)
+    public function unmapAllTerms(TaxonomyOwnerInterface $owner, $for = 'ownerId', $vocabName = null)
     {
         // Do not unmap terms for new entities.
         if ($for === 'ownerId' && $owner->getTaxonomyOwnerId() === null) {
