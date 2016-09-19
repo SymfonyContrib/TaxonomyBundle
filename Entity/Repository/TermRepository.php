@@ -69,13 +69,13 @@ class TermRepository extends MaterializedPathRepository
     {
         static $tree;
 
-        if ($reset || !empty($tree[$vocab])) {
-            return $tree[$vocab];
-        }
-
         $vocabName = $vocab;
         if ($vocab instanceof Vocabulary) {
             $vocabName = $vocab->getName();
+        }
+
+        if ($reset || !empty($tree[$vocabName])) {
+            return $tree[$vocabName];
         }
 
         // Get all terms in this vocabulary.
@@ -121,9 +121,9 @@ class TermRepository extends MaterializedPathRepository
         };
         $sort($vocabTree);
 
-        $tree[$vocab] = array_values($vocabTree);
+        $tree[$vocabName] = array_values($vocabTree);
 
-        return $tree[$vocab];
+        return $tree[$vocabName];
     }
 
     /**
