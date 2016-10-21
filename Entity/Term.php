@@ -330,10 +330,13 @@ class Term
      * Returns the name prepended by level to show hierarchy.
      *
      * @param string $levelCharacter
+     * @param string $label
      * @return string
      */
-    public function getHierarchyLabel($levelCharacter = '--')
+    public function getHierarchyLabel($levelCharacter = '--', $label = 'name')
     {
-        return str_repeat($levelCharacter, $this->level) . ' ' . $this->getName();
+        $labelFunc = 'get'.ucfirst($label);
+
+        return str_repeat($levelCharacter, $this->level) . ' ' . $this->$labelFunc();
     }
 }
