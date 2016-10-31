@@ -31,6 +31,11 @@ class Vocabulary
     protected $desc;
 
     /**
+     * @var string
+     */
+    protected $orderable;
+
+    /**
      * @var int
      */
     protected $weight;
@@ -58,6 +63,7 @@ class Vocabulary
     {
         $this->desc      = '';
         $this->weight    = 0;
+        $this->orderable = true;
         $this->createdAt = new \DateTime();
     }
 
@@ -249,5 +255,25 @@ class Vocabulary
     public function getWeight()
     {
         return $this->weight;
+    }
+
+    /**
+     * @return string
+     */
+    public function isOrderable()
+    {
+        return $this->orderable;
+    }
+
+    /**
+     * @param string $orderable
+     *
+     * @return Vocabulary
+     */
+    public function setOrderable($orderable)
+    {
+        $this->orderable = (bool)$orderable;
+
+        return $this;
     }
 }

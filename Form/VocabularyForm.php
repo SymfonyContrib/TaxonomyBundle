@@ -6,7 +6,7 @@
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,6 +27,9 @@ class VocabularyForm extends AbstractType
             ->add('desc', TextareaType::class, [
                 'required' => false,
                 'trim'     => true,
+            ])
+            ->add('orderable', CheckboxType::class, [
+                'required' => false,
             ])
             ->add('save', SubmitType::class, [
                 'attr' => [

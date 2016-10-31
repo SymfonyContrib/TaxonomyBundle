@@ -40,6 +40,11 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary:
             length: 255
             options:
                 comment: Description for use in management.
+        orderable:
+            column: is_orderable
+            type: boolean
+            options:
+                comment: Whether or not this vocab is orderable.
         weight:
             type: integer
             options:

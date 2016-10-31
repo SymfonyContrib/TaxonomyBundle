@@ -31,26 +31,30 @@ class AdminTermController extends Controller
         $terms      = $taxonomy->getTermRepo()->getFlatTree($vocabulary);
 
         $uri = $request->getRequestUri();
-        $options = [
-            'vocabulary' => $vocabulary,
-        ];
-        $form = $this->createForm(TermsSortForm::class, ['terms' => $terms], $options);
 
-        $form->handleRequest($request);
+        $form = false;
+        if ($vocabulary->isOrderable()) {
+            $options = [
+                'vocabulary' => $vocabulary,
+            ];
+            $form = $this->createForm(TermsSortForm::class, ['terms' => $terms], $options);
 
-        if ($form->isValid()) {
-            $em->flush();
+            $form->handleRequest($request);
 
-            $msg = 'Saved terms order.';
-            $this->get('session')->getFlashBag()->add('success', $msg);
+            if ($form->isValid()) {
+                $em->flush();
 
-            return $this->redirect($uri);
+                $msg = 'Saved terms order.';
+                $this->get('session')->getFlashBag()->add('success', $msg);
+
+                return $this->redirect($uri);
+            }
         }
 
         return $this->render('TaxonomyBundle:Admin/Term:list.html.twig', [
             'terms'      => $terms,
             'vocabulary' => $vocabulary,
-            'form'       => $form->createView(),
+            'form'       => $form ? $form->createView() : false,
             'cancel_url' => $uri,
         ]);
     }

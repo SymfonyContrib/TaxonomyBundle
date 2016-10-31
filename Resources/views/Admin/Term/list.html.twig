@@ -8,7 +8,7 @@
         <strong>Add Term</strong>
     </a>
 
-    {% if terms %}
+    {% if terms and form %}
         {{ form_start(form) }}
         {{ form_errors(form) }}
     {% endif %}
@@ -18,13 +18,15 @@
             <tr class="active">
                 <th>Name</th>
                 <th>Description</th>
-                <th class="tabledrag-hide">Form</th>
+                {% if form %}
+                    <th class="tabledrag-hide">Form</th>
+                {% endif %}
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for key, term in terms %}
-            <tr class="draggable">
+            <tr{% if form %} class="draggable"{% endif %}>
                 <td>
                     {% for i in 1..term.level if term.level > 0 %}
                         <div class="indentation">&nbsp;</div>
@@ -32,7 +34,9 @@
                     {{ term.name }}
                 </td>
                 <td>{{ term.desc }}</td>
-                <td class="tabledrag-hide">{{ form_widget(form.terms[key]) }}</td>
+                {% if form %}
+                    <td class="tabledrag-hide">{{ form_widget(form.terms[key]) }}</td>
+                {% endif %}
                 <td>
                     <div class="btn-group">
                         <a title="Edit" href="{{ path('taxonomy_admin_term_edit', {'vocabName': vocabulary.name, 'termId': term.id}) }}" class="btn btn-primary btn-sm">
@@ -57,7 +61,7 @@
         </tbody>
     </table>
 
-    {% if terms %}
+    {% if terms and form %}
         {{ form_widget(form.save) }}
         <a href="{{ cancel_url }}" class="cancel-btn">Reset</a>
         {{ form_end(form) }}
