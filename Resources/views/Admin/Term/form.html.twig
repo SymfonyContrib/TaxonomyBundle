@@ -4,9 +4,11 @@
 
 {% block content %}
     {{ form_start(form) }}
+    {{ form_errors(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.desc) }}
     {{ form_row(form.parent) }}
+    {{ form_row(form.enabled) }}
     {{ form_widget(form.save) }}
     <a href="{{ cancel_url }}" class="cancel-btn">Cancel</a>
     {{ form_end(form) }}

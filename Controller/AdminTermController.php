@@ -28,7 +28,7 @@ class AdminTermController extends Controller
         $em         = $this->getDoctrine()->getManager();
         $taxonomy   = $this->get('taxonomy');
         $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
-        $terms      = $taxonomy->getTermRepo()->getFlatTree($vocabulary);
+        $terms      = $taxonomy->getTermRepo()->getFlatTree($vocabulary, true);
 
         $uri = $request->getRequestUri();
 

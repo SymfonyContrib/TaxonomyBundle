@@ -41,12 +41,18 @@ class TermRepository extends MaterializedPathRepository
      * Get a query builder for creating a term tree.
      *
      * @param string $vocabName
+     * @param bool   $all
      * @return QueryBuilder
      */
-    public function getTermTreeQb($vocabName)
+    public function getTermTreeQb($vocabName, $all = false)
     {
         $qb    = $this->getNodesHierarchyQueryBuilder(null, false, [], false);
         $alias = (string)$qb->getDQLPart('select')[0];
+
+        if ($all === false) {
+            $qb->andWhere($alias.'.enabled = :enabled')
+                ->setParameter('enabled', true);
+        }
 
         $qb->addSelect('v')
             ->innerJoin($alias . '.vocabulary', 'v')
@@ -62,10 +68,11 @@ class TermRepository extends MaterializedPathRepository
      * Get an ordered nested array of terms.
      *
      * @param null|string|Vocabulary $vocab
+     * @param bool $all
      * @param bool $reset
      * @return array
      */
-    public function getTree($vocab = null, $reset = false)
+    public function getTree($vocab = null, $all = false, $reset = false)
     {
         static $tree;
 
@@ -79,7 +86,7 @@ class TermRepository extends MaterializedPathRepository
         }
 
         // Get all terms in this vocabulary.
-        $terms = $this->getTermTreeQb($vocabName)->getQuery()->getResult();
+        $terms = $this->getTermTreeQb($vocabName, $all)->getQuery()->getResult();
 
         // Create a map of terms and their weight value.
         // Weight is used as the tree array key to allow for easy sorting.
@@ -130,11 +137,12 @@ class TermRepository extends MaterializedPathRepository
      * Get a ordered flat list of terms.
      *
      * @param string|Vocabulary $vocab
+     * @param bool              $all
      * @return array
      */
-    public function getFlatTree($vocab)
+    public function getFlatTree($vocab, $all = false)
     {
-        $tree   = $this->getTree($vocab);
+        $tree   = $this->getTree($vocab, $all);
         $result = [];
         $result = $this->flattenTree($tree, $result);
 

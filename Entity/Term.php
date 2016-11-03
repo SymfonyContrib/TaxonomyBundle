@@ -70,11 +70,17 @@ class Term
      */
     protected $children;
 
+    /**
+     * @var bool
+     */
+    protected $enabled;
+
     public function __construct()
     {
         $this->desc      = '';
         $this->weight    = 0;
         $this->level     = 0;
+        $this->enabled   = true;
         $this->createdAt = new \DateTime();
         $this->children  = new ArrayCollection();
     }
@@ -339,4 +345,25 @@ class Term
 
         return str_repeat($levelCharacter, $this->level) . ' ' . $this->$labelFunc();
     }
+
+    /**
+     * @return boolean
+     */
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param boolean $enabled
+     *
+     * @return Term
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = (bool)$enabled;
+
+        return $this;
+    }
+
 }

@@ -91,6 +91,9 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term:
                 - treeLevel
             options:
                 comment: Nesting level.
+        enabled:
+            column: is_enabled
+            type: boolean
         createdAt:
             type: datetime
             options:

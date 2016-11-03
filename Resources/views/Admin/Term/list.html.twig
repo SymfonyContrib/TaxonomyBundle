@@ -18,6 +18,7 @@
             <tr class="active">
                 <th>Name</th>
                 <th>Description</th>
+                <th>Enabled</th>
                 {% if form %}
                     <th class="tabledrag-hide">Form</th>
                 {% endif %}
@@ -34,6 +35,11 @@
                     {{ term.name }}
                 </td>
                 <td>{{ term.desc }}</td>
+                <td>
+                    {% if term.isEnabled %}
+                        <span class="glyphicon glyphicon-ok"></span>
+                    {% endif %}
+                </td>
                 {% if form %}
                     <td class="tabledrag-hide">{{ form_widget(form.terms[key]) }}</td>
                 {% endif %}
