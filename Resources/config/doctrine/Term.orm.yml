@@ -26,10 +26,6 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term:
             gedmo:
                 - treeParent
     oneToMany:
-        map:
-            targetEntity: TermMap
-            mappedBy: term
-            fetch: EXTRA_LAZY
         children:
             targetEntity: Term
             mappedBy: parent

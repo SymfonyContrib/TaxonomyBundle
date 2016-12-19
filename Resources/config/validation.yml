@@ -26,18 +26,3 @@ SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term:
             - DateTime: ~
 #        vocabulary:
 #            - Valid: ~
-
-SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap:
-    properties:
-        term:
-            - Valid: ~
-        owner:
-            - NotBlank: ~
-            - Type:
-                type: string
-        ownerId:
-            - NotBlank: ~
-            - Type:
-                type: string
-        createdAt:
-            - DateTime: ~

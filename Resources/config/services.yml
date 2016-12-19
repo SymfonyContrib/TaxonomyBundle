@@ -4,10 +4,11 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
 
-    taxonomy.doctrine.event_subscriber:
-        class: SymfonyContrib\Bundle\TaxonomyBundle\Doctrine\EventSubscriber
-        tags:
-            - name: doctrine.event_subscriber
+    taxonomy.repository.term:
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Entity\Repository\TermRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term
 
     taxonomy.form.vocabulary:
         class: SymfonyContrib\Bundle\TaxonomyBundle\Form\VocabularyForm
@@ -19,19 +20,19 @@ services:
         tags:
             - name: form.type
 
-    taxonomy.form.type.taxonomy_text:
-        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyTextType
-        arguments:
-            - "@taxonomy"
-        tags:
-            - name: form.type
-
-    taxonomy.form.type.taxonomy_choice:
-        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyChoiceType
-        arguments:
-            - "@taxonomy"
-        tags:
-            - name: form.type
+#    taxonomy.form.type.taxonomy_text:
+#        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyTextType
+#        arguments:
+#            - "@taxonomy.repository.term"
+#        tags:
+#            - name: form.type
+#
+#    taxonomy.form.type.taxonomy_choice:
+#        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TaxonomyChoiceType
+#        arguments:
+#            - "@taxonomy.repository.term"
+#        tags:
+#            - name: form.type
 
     taxonomy.form.terms_sort:
         class: SymfonyContrib\Bundle\TaxonomyBundle\Form\TermsSortForm
@@ -41,6 +42,13 @@ services:
     taxonomy.form.type.term_entity:
         class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TermEntityType
         arguments:
-            - "@taxonomy"
+            - "@taxonomy.repository.term"
+        tags:
+            - name: form.type
+
+    taxonomy.form.type.tag:
+        class: SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TagType
+        arguments:
+            - "@taxonomy.repository.term"
         tags:
             - name: form.type

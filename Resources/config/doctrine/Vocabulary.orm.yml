@@ -1,7 +1,6 @@
 SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary:
     type: entity
     table: taxonomy_vocabulary
-    repositoryClass: SymfonyContrib\Bundle\TaxonomyBundle\Entity\Repository\VocabularyRepository
     uniqueConstraints:
         taxonomy_vocabulary_name:
             columns:

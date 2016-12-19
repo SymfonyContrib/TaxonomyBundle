@@ -20,8 +20,8 @@ class AjaxController extends Controller
      */
     public function termSearchAction($vocabName = null, $term = null)
     {
-        $taxonomy = $this->get('taxonomy');
-        $terms    = $taxonomy->searchTerms($vocabName, $term);
+        $repo  = $this->get('taxonomy.repository.term');
+        $terms = $repo->searchTerms($vocabName, $term);
 
         return $this->json(['terms' => $terms]);
     }

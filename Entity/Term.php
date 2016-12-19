@@ -56,11 +56,6 @@ class Term
     protected $updatedAt;
 
     /**
-     * @var TermMap
-     */
-    protected $map;
-
-    /**
      * @var null|Term
      */
     protected $parent;
@@ -182,7 +177,7 @@ class Term
     /**
      * @param \DateTime $updatedAt
      *
-*@return Term
+     * @return Term
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -235,25 +230,6 @@ class Term
     public function getWeight()
     {
         return $this->weight;
-    }
-
-    /**
-     * @param TermMap $map
-     * @return Term
-     */
-    public function setMap($map)
-    {
-        $this->map = $map;
-
-        return $this;
-    }
-
-    /**
-     * @return \SymfonyContrib\Bundle\TaxonomyBundle\Entity\TermMap
-     */
-    public function getMap()
-    {
-        return $this->map;
     }
 
     /**
@@ -365,5 +341,4 @@ class Term
 
         return $this;
     }
-
 }

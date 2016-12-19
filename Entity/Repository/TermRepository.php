@@ -17,6 +17,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param null|string $vocabName
      * @param null|string $term
+     *
      * @return QueryBuilder
      */
     public function getTermQb($vocabName = null, $term = null)
@@ -42,6 +43,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param string $vocabName
      * @param bool   $all
+     *
      * @return QueryBuilder
      */
     public function getTermTreeQb($vocabName, $all = false)
@@ -70,6 +72,7 @@ class TermRepository extends MaterializedPathRepository
      * @param null|string|Vocabulary $vocab
      * @param bool $all
      * @param bool $reset
+     *
      * @return array
      */
     public function getTree($vocab = null, $all = false, $reset = false)
@@ -138,6 +141,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param string|Vocabulary $vocab
      * @param bool              $all
+     *
      * @return array
      */
     public function getFlatTree($vocab, $all = false)
@@ -154,6 +158,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param array $tree
      * @param array $result
+     *
      * @return array
      */
     public function flattenTree(array $tree, array &$result)
@@ -173,6 +178,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param string $name
      * @param string $vocabName
+     *
      * @return null|Term
      */
     public function getTerm($name, $vocabName)
@@ -187,6 +193,7 @@ class TermRepository extends MaterializedPathRepository
      *
      * @param array $terms
      * @param string $vocabName
+     *
      * @return array
      */
     public function getTerms(array $terms, $vocabName)
@@ -202,6 +209,7 @@ class TermRepository extends MaterializedPathRepository
      * Get all terms in a vocabulary.
      *
      * @param string $vocabName
+     *
      * @return array
      */
     public function getTermsInVocabulary($vocabName)
@@ -214,5 +222,99 @@ class TermRepository extends MaterializedPathRepository
         }
 
         return $terms;
+    }
+
+    /**
+     * Auto-complete search.
+     *
+     * @param null|string $vocabName
+     * @param null|string $term
+     *
+     * @return array
+     */
+    public function searchTerms($vocabName = null, $term = null)
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        if ($vocabName) {
+            $qb->innerJoin('t.vocabulary', 'v')
+               ->andWhere('v.name = :vocab')
+               ->setParameter('vocab', $vocabName);
+        }
+
+        if ($term && $vocabName) {
+            $qb->andWhere('t.name LIKE :term')
+               ->setParameter('term', '%'.$term.'%');
+        }
+
+        return $qb->getQuery()->getArrayResult();
+    }
+
+    /**
+     * Create a term entity.
+     *
+     * @param string            $name
+     * @param string|Vocabulary $vocab
+     * @param bool              $flush
+     *
+     * @return Term
+     */
+    public function createTerm($name, $vocab, $flush = false)
+    {
+        $em = $this->getEntityManager();
+
+        if (is_string($vocab)) {
+            $vocabRepo = $em->getRepository(Vocabulary::class);
+            $vocab     = $vocabRepo->findOneBy(['name' => $vocab]);
+        }
+
+        $term = new Term();
+        $term->setName($name)
+             ->setVocabulary($vocab);
+
+
+        $em->persist($term);
+        if ($flush) {
+            $em->flush();
+        }
+
+        return $term;
+    }
+
+    /**
+     * Create multiple term entities.
+     *
+     * @param array $terms
+     *
+     * @return array
+     */
+    public function createTerms(array $terms)
+    {
+        $entities = [];
+        foreach ($terms as $data) {
+            $entities[] = $this->createTerm($data['name'], $data['vocabulary']);
+        }
+
+        return $entities;
+    }
+
+    /**
+     * Get a term entity or create it, if it does not exist.
+     *
+     * @param string $name
+     * @param string $vocabName
+     *
+     * @return Term
+     */
+    public function getOrCreateTerm($name, $vocabName)
+    {
+        $term = $this->getTerm($name, $vocabName);
+
+        // Check if term exists.
+        if (!$term) {
+            $term = $this->createTerm($name, $vocabName);
+        }
+
+        return $term;
     }
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Provides pages for administration of taxonomy terms.
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Controller;
 
@@ -10,10 +7,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Term;
+use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary;
 use SymfonyContrib\Bundle\TaxonomyBundle\Form\TermForm;
 use SymfonyContrib\Bundle\TaxonomyBundle\Form\TermsSortForm;
-use SymfonyContrib\Bundle\TaxonomyBundle\Form\Type\TermSortType;
 
+/**
+ * Provides pages for administration of taxonomy terms.
+ */
 class AdminTermController extends Controller
 {
     /**
@@ -21,14 +21,16 @@ class AdminTermController extends Controller
      *
      * @param Request $request
      * @param string $vocabName Machine name of vocabulary.
+     *
      * @return Response
      */
     public function listAction(Request $request, $vocabName)
     {
         $em         = $this->getDoctrine()->getManager();
-        $taxonomy   = $this->get('taxonomy');
-        $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
-        $terms      = $taxonomy->getTermRepo()->getFlatTree($vocabulary, true);
+        $vocabRepo  = $em->getRepository(Vocabulary::class);
+        $termRepo   = $em->getRepository(Term::class);
+        $vocabulary = $vocabRepo->findOneBy(['name' => $vocabName]);
+        $terms      = $termRepo->getFlatTree($vocabName, true);
 
         $uri = $request->getRequestUri();
 
@@ -65,17 +67,17 @@ class AdminTermController extends Controller
      * @param Request $request
      * @param string $vocabName
      * @param null|string $termId
+     *
      * @return RedirectResponse|Response
      */
     public function formAction(Request $request, $vocabName, $termId = null)
     {
-        $taxonomy   = $this->get('taxonomy');
-        $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
         $em         = $this->getDoctrine()->getManager();
+        $vocabulary = $em->getRepository(Vocabulary::class)->findOneBy(['name' => $vocabName]);
         $listUri    = $this->generateUrl('taxonomy_admin_term_list', ['vocabName' => $vocabName]);
 
         if ($termId) {
-            $term = $taxonomy->getTermRepo()->find($termId);
+            $term = $em->getRepository(Term::class)->find($termId);
         } else {
             $term = new Term();
             $term->setVocabulary($vocabulary);
@@ -107,12 +109,12 @@ class AdminTermController extends Controller
      * Delete a term with confirmation.
      *
      * @param string $termId ID of term.
+     *
      * @return Response
      */
     public function deleteAction($termId)
     {
-        $taxonomy  = $this->get('taxonomy');
-        $term      = $taxonomy->getTermRepo()->find($termId);
+        $term      = $this->getDoctrine()->getRepository(Term::class)->find($termId);
         $vocabName = $term->getVocabulary()->getName();
 
         $options = [
@@ -134,6 +136,7 @@ class AdminTermController extends Controller
      * Delete confirmation callback.
      *
      * @param array $args
+     *
      * @return RedirectResponse
      */
     public function termDelete(array $args)

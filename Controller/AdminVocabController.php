@@ -1,7 +1,4 @@
 <?php
-/**
- * Provides pages for administration of taxonomy vocabularies.
- */
 
 namespace SymfonyContrib\Bundle\TaxonomyBundle\Controller;
 
@@ -12,6 +9,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use SymfonyContrib\Bundle\TaxonomyBundle\Entity\Vocabulary;
 use SymfonyContrib\Bundle\TaxonomyBundle\Form\VocabularyForm;
 
+/**
+ * Provides pages for administration of taxonomy vocabularies.
+ */
 class AdminVocabController extends Controller
 {
     /**
@@ -21,8 +21,7 @@ class AdminVocabController extends Controller
      */
     public function listAction()
     {
-        $taxonomy = $this->get('taxonomy');
-        $vocabs   = $taxonomy->getVocabRepo()->findAll();
+        $vocabs = $this->getDoctrine()->getRepository(Vocabulary::class)->findAll();
 
         return $this->render('TaxonomyBundle:Admin/Vocab:list.html.twig', [
             'vocabs' => $vocabs,
@@ -34,16 +33,17 @@ class AdminVocabController extends Controller
      *
      * @param Request $request
      * @param null|string $vocabName
+     *
      * @return RedirectResponse|Response
      */
     public function formAction(Request $request, $vocabName = null)
     {
-        $taxonomy = $this->get('taxonomy');
         $em       = $this->getDoctrine()->getManager();
         $listUri  = $this->generateUrl('taxonomy_admin_vocab_list');
 
         if ($vocabName) {
-            $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $vocabName]);
+            $vocabulary = $em->getRepository(Vocabulary::class)
+                ->findOneBy(['name' => $vocabName]);
         } else {
             $vocabulary = new Vocabulary();
         }
@@ -72,6 +72,7 @@ class AdminVocabController extends Controller
      * Delete a vocabulary with confirmation.
      *
      * @param string $vocabName Machine name of vocabulary.
+     *
      * @return Response
      */
     public function deleteAction($vocabName)
@@ -95,13 +96,13 @@ class AdminVocabController extends Controller
      * Delete confirmation callback.
      *
      * @param array $args
+     *
      * @return RedirectResponse
      */
     public function vocabDelete(array $args)
     {
         $em = $this->getDoctrine()->getManager();
-        $taxonomy   = $this->get('taxonomy');
-        $vocabulary = $taxonomy->getVocabRepo()->findOneBy(['name' => $args['vocabName']]);
+        $vocabulary = $em->getRepository(Vocabulary::class)->findOneBy(['name' => $args['vocabName']]);
 
         $em->remove($vocabulary);
         $em->flush();

@@ -29,17 +29,17 @@ class TaxonomyChoiceType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    /*public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $terms = $this->taxonomy->getTermRepo()->getFlatTree($options['vocabulary'], $builder->getName());
-        dump($terms);
+
         $builder->add($builder->getName(), ChoiceType::class, [
             'choices'  => $terms,
             'expanded' => true,
             'multiple' => true,
             'label'    => false,
         ]);
-    }*/
+    }
 
     /**
      * {@inheritdoc}
