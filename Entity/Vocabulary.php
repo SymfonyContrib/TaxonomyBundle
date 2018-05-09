@@ -74,7 +74,7 @@ class Vocabulary
      */
     public function __toString()
     {
-        return $this->getLabel();
+        return (string) $this->getLabel();
     }
 
     /**
